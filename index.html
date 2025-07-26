@@ -94,6 +94,7 @@
             padding: 30px;
             border: 1px solid #e2e8f0;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); /* Inner shadow for depth */
+            text-align: left; /* Align feedback text to left */
         }
         .feedback-section h3 {
             font-size: 1.25rem;
@@ -285,48 +286,53 @@
 Here are the rubrics:
 
 **Part 6 (10M) Rubric:**
-* **Score 5:** All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
-* **Score 4:** Performance shares features of scores 3 and 5.
-* **Score 3:** Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
-* **Score 2:** Performance shares features of scores 1 and 3.
-* **Score 1:** Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
-* **Score 0:** Performance below score 1.
+* Score 5: All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
+* Score 4: Performance shares features of scores 3 and 5.
+* Score 3: Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
+* Score 2: Performance shares features of scores 1 and 3.
+* Score 1: Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
+* Score 0: Performance below score 1.
 
 **Part 7 (15M) Rubric:**
-* **Score 5:** All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
-* **Score 4:** Performance shares features of scores 3 and 5.
-* **Score 3:** Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
-* **Score 2:** Performance shares features of scores 1 and 3.
-* **Score 1:** Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
-* **Score 0:** Performance below band 1.
+* Score 5: All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
+* Score 4: Performance shares features of scores 3 and 5.
+* Score 3: Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
+* Score 2: Performance shares features of scores 1 and 3.
+* Score 1: Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
+* Score 0: Performance below band 1.
 
 **Instructions:**
 1.  **Extract the essay text** from the provided image.
 2.  **Evaluate the essay specifically against the rubric for ${selectedPart}**.
-3.  **Provide a score (1-5) for each relevant category** in a clear, itemized list.
-    * For Part 6, the categories are: "Content & Communicative Achievement" and "Organisation & Language".
-    * For Part 7, the categories are: "Content", "Communicative Achievement", and "Organisation & Language".
+3.  **Provide a score (1-5) for each relevant category**.
 4.  **Provide an overall score.**
 5.  **Give detailed, constructive feedback** for each category, explaining *why* the score was given based on the rubric criteria.
-6.  **Suggest specific improvements** for the student to achieve a higher score.
+6.  **Suggest specific improvements** for the student to achieve a higher score. Keep these suggestions short, concise sentences.
 7.  If no essay text is detected, please state that clearly.
+8.  Do not use excessive bolding or markdown in your response, only use it for section titles as specified below.
+
 **Format the output as follows:**
-**Evaluation for [Selected Part]**
-**Scores:**
-- Content (if Part 7): [Score]/5
-- Communicative Achievement (if Part 7): [Score]/5
-- Content & Communicative Achievement (if Part 6): [Score]/5
-- Organisation & Language: [Score]/5
-**Overall Score:** [Calculated Overall Score]/[Max Score for Part]
+Content & Communicative Achievement: [Score]/5
+Organisation & Language: [Score]/5
+Overall Mark: [Calculated Overall Score]/[Max Score for Part]
 
-**Detailed Feedback:**
-**Content [if Part 7]:** [Feedback based on rubric]
-**Communicative Achievement [if Part 7]:** [Feedback based on rubric]
-**Content & Communicative Achievement [if Part 6]:** [Feedback based on rubric]
-**Organisation & Language:** [Feedback based on rubric]
+Improvement:
+[Short sentence 1].
+[Short sentence 2].
+[Short sentence 3].
+...
 
-**Suggestions for Improvement:**
-[Specific, actionable suggestions]
+For Part 7, the format should be:
+Content: [Score]/5
+Communicative Achievement: [Score]/5
+Organisation & Language: [Score]/5
+Overall Mark: [Calculated Overall Score]/[Max Score for Part]
+
+Improvement:
+[Short sentence 1].
+[Short sentence 2].
+[Short sentence 3].
+...
 `;
                 chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
@@ -367,6 +373,8 @@ Here are the rubrics:
                     const aiFeedback = result.candidates[0].content.parts[0].text;
                     // Replace newlines with <br> for HTML display
                     feedbackText.innerHTML = aiFeedback.replace(/\n/g, '<br>');
+                    // Also, ensure the text alignment is left for better readability of the feedback
+                    feedbackContainer.style.textAlign = 'left';
                 } else {
                     feedbackText.innerHTML = '<p class="text-lg text-red-600">Could not get AI feedback. Please try again.</p>';
                     console.error('Unexpected API response structure:', result);
