@@ -6,6 +6,8 @@
     <title>Smart Essay Feedback for UASA</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Star Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         /* Custom styles for better aesthetics and responsiveness */
         body {
@@ -139,14 +141,136 @@
             margin-top: 20px;
             text-align: center;
         }
+
+        /* Print-specific styles */
+        @media print {
+            @page {
+                size: A4 landscape; /* Set page to A4 landscape */
+                margin: 0; /* Remove default margins */
+            }
+            body {
+                background-color: #fff;
+                margin: 0;
+                padding: 0;
+                font-family: "Inter", sans-serif;
+                color: #000;
+                display: block; /* Ensure body is block for grid layout */
+                width: 297mm; /* A4 landscape width */
+                height: 210mm; /* A4 landscape height */
+            }
+            .print-container {
+                display: grid;
+                grid-template-columns: 1fr 1fr; /* Two equal columns for left and right sheets */
+                width: 100%;
+                height: 100%;
+                padding: 5mm; /* Overall padding for the entire A4 page */
+                box-sizing: border-box;
+            }
+            /* Hide elements not needed for printing */
+            .flex.flex-col.items-center.gap-6.mb-8,
+            .grid.grid-cols-1.md\:grid-cols-2.gap-8,
+            .btn,
+            h1,
+            #pupilNameInput, #teacherNameInput,
+            label[for="pupilName"], label[for="teacherName"] {
+                display: none;
+            }
+
+            /* Left Sheet Styling */
+            .print-left-sheet {
+                padding-right: 5mm; /* Space between left and right sheets */
+                border-right: 1px dashed #ddd; /* Visual separator */
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: center;
+                text-align: center;
+                box-sizing: border-box;
+                font-size: 8pt; /* Base font size for left sheet */
+            }
+            .print-left-sheet h1 {
+                display: block;
+                font-size: 14pt; /* Smaller title for left sheet */
+                font-weight: bold;
+                margin-bottom: 2mm;
+                color: #000;
+            }
+            .print-left-sheet p {
+                font-size: 8pt;
+                margin-bottom: 0.5mm;
+                line-height: 1.1;
+            }
+            .print-left-sheet .star-rating-print {
+                font-size: 12pt; /* Smaller stars */
+                color: #facc15;
+                margin-top: 1mm;
+                margin-bottom: 1mm;
+            }
+            .print-left-sheet .overall-score-print {
+                font-size: 10pt;
+                font-weight: bold;
+                margin-top: 1mm;
+                margin-bottom: 3mm;
+            }
+            .print-question-section, .print-essay-image-section {
+                width: 100%; /* Take full width of left column */
+                margin-bottom: 3mm; /* Spacing between sections */
+                padding-bottom: 2mm; /* Padding before border */
+                border-bottom: 1px solid #eee; /* Separator */
+                box-sizing: border-box;
+            }
+            .print-question-section h2, .print-essay-image-section h2 {
+                font-size: 9pt; /* Smaller heading for sections */
+                font-weight: bold;
+                margin-bottom: 1mm;
+                text-align: center; /* Center section titles */
+            }
+            .print-question-section p {
+                font-size: 8pt;
+                line-height: 1.1;
+                text-align: left; /* Align question text left */
+            }
+            .print-question-section img, .print-essay-image-section img {
+                max-width: 90%; /* Smaller max-width for images to fit */
+                height: auto;
+                border-radius: 5px;
+                margin: 0 auto; /* Center images */
+                display: block;
+            }
+
+            /* Right Sheet Styling */
+            .print-right-sheet {
+                padding-left: 5mm; /* Space between left and right sheets */
+                display: flex;
+                flex-direction: column;
+                box-sizing: border-box;
+            }
+            .feedback-content {
+                font-size: 10.5pt; /* Increased font size for main feedback */
+                line-height: 1.4; /* More comfortable line height */
+                color: #000;
+                text-align: left;
+            }
+            .feedback-content p, .feedback-content ul, .feedback-content li {
+                font-size: 10.5pt; /* Consistent font size */
+                line-height: 1.4;
+                color: #000;
+                margin-bottom: 3px; /* Standard margin for list items/paragraphs */
+            }
+            .feedback-content ul {
+                list-style-type: disc;
+                margin-left: 18px; /* Standard list indent */
+                padding-left: 0;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-8">Smart Essay Feedback for UASA <span class="text-indigo-600"></span></h1>
+        <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-8">Smart Essay Feedback for UASA</h1>
 
         <!-- Part Selection -->
-        <div class="flex flex-col items-center gap-6 mb-8 p-6 bg-blue-50 rounded-xl shadow-inner">
+        <div class="flex flex-col items-center gap-6 mb-8 p-6 bg-blue-50 rounded-xl shadow-md">
             <h2 class="text-2xl font-bold text-gray-700">Select Essay Part:</h2>
             <div class="flex flex-col sm:flex-row gap-8">
                 <label class="inline-flex items-center cursor-pointer">
@@ -160,108 +284,292 @@
             </div>
         </div>
 
-        <!-- Camera Feed and Controls -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div class="flex flex-col items-center gap-6 bg-gray-50 p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-gray-700">1. Capture Essay Photo</h2>
-                <video id="video" class="w-full h-80 bg-gray-200" autoplay playsinline></video>
-                <button id="captureButton" class="btn btn-primary w-full">
+        <!-- Question Input Section -->
+        <div id="questionSection" class="flex flex-col items-center gap-6 mb-8 p-6 bg-purple-50 rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold text-gray-700">1. Provide Essay Question</h2>
+            <div id="questionInputControls" class="flex gap-4 w-full justify-center">
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" class="form-radio text-purple-600 h-5 w-5" name="questionInputType" value="text" checked>
+                    <span class="ml-2 text-gray-700 font-medium">Type Question</span>
+                </label>
+                <label class="inline-flex items-center cursor-pointer">
+                    <input type="radio" class="form-radio text-purple-600 h-5 w-5" name="questionInputType" value="photo">
+                    <span class="ml-2 text-gray-700 font-medium">Capture Question Photo</span>
+                </label>
+            </div>
+
+            <div id="questionTextInput" class="w-full max-w-md">
+                <textarea id="essayQuestion" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-purple-500 focus:ring focus:ring-purple-200 focus:ring-opacity-50 p-3 text-base" rows="4" placeholder="Type the essay question here..."></textarea>
+            </div>
+
+            <div id="questionPhotoInput" class="hidden w-full max-w-md flex flex-col items-center gap-4">
+                <video id="questionVideo" class="w-full h-48 bg-gray-200" autoplay playsinline></video>
+                <button id="captureQuestionButton" class="btn btn-secondary w-full">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15.5a2.25 2.25 0 0 0 2.25-2.25V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055m-18.177 6.643C2.86 14.156 3.61 15 4.662 15h14.676c1.052 0 1.802-.844 1.802-1.926 0-.38-.043-.756-.128-1.127M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" />
                     </svg>
-                    Capture Photo
+                    Capture Question Photo
                 </button>
+                <canvas id="questionCanvas" class="hidden"></canvas>
+                <img id="capturedQuestionPhoto" class="hidden w-full h-48 bg-gray-200" alt="Captured Question">
             </div>
+            <button id="confirmQuestionButton" class="btn btn-primary w-full max-w-md">Confirm Question</button>
+            <div id="confirmedQuestionDisplay" class="hidden w-full max-w-md p-4 mt-4 bg-purple-100 rounded-lg border border-purple-300 text-gray-800 text-left">
+                <p class="font-semibold mb-2">Confirmed Question:</p>
+                <p id="displayedQuestionText" class="text-base break-words"></p>
+                <img id="displayedQuestionImage" class="hidden w-full h-auto max-h-48 mt-2 rounded-md" alt="Confirmed Question Image">
+            </div>
+        </div>
 
-            <div class="flex flex-col items-center gap-6 bg-gray-50 p-6 rounded-xl shadow-md">
-                <h2 class="text-2xl font-bold text-gray-700">2. Captured Image</h2>
-                <canvas id="canvas" class="hidden w-full h-80 bg-gray-200"></canvas>
-                <img id="photo" class="hidden w-full h-80 bg-gray-200" alt="Captured Photo">
-                <button id="analyzeButton" class="btn btn-secondary w-full hidden">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9.75 9.75m0 0l-1.35 1.35M9.75 9.75L7.5 7.5M18 18.084V17.25a2.25 2.25 0 00-2.25-2.25H13.5a2.25 2.25 0 00-2.25 2.25v.834m7.5 0H21a2.25 2.25 0 002.25-2.25V10.5a2.25 2.25 0 00-2.25-2.25H15.75m-1.5 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V15.75m-1.5-1.5V9.75m-3 0V3.375C11.25 2.596 10.596 2 9.75 2H4.5A2.25 2.25 0 002.25 4.25v16.5A2.25 2.25 0 004.5 23h15a2.25 2.25 0 002.25-2.25v-6.75" />
-                    </svg>
-                    Analyze Essay
-                </button>
+        <!-- Essay Capture Section (Initially hidden) -->
+        <div id="essayCaptureSection" class="hidden flex flex-col items-center gap-6 mb-8 p-6 bg-gray-50 rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold text-gray-700">2. Capture Essay Photo</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full">
+                <div class="flex flex-col items-center gap-6">
+                    <video id="video" class="w-full h-80 bg-gray-200" autoplay playsinline></video>
+                    <button id="captureButton" class="btn btn-primary w-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15.5a2.25 2.25 0 0 0 2.25-2.25V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055m-18.177 6.643C2.86 14.156 3.61 15 4.662 15h14.676c1.052 0 1.802-.844 1.802-1.926 0-.38-.043-.756-.128-1.127M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Z" />
+                        </svg>
+                        Capture Essay Photo
+                    </button>
+                </div>
+
+                <div class="flex flex-col items-center gap-6">
+                    <canvas id="canvas" class="hidden w-full h-80 bg-gray-200"></canvas>
+                    <img id="photo" class="hidden w-full h-80 bg-gray-200" alt="Captured Essay Photo">
+                    <button id="analyzeButton" class="btn btn-secondary w-full hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9.75 9.75m0 0l-1.35 1.35M9.75 9.75L7.5 7.5M18 18.084V17.25a2.25 2.25 0 00-2.25-2.25H13.5a2.25 2.25 0 00-2.25 2.25v.834m7.5 0H21a2.25 2.25 0 002.25-2.25V10.5a2.25 2.25 0 00-2.25-2.25H15.75m-1.5 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V15.75m-1.5-1.5V9.75m-3 0V3.375C11.25 2.596 10.596 2 9.75 2H4.5A2.25 2.25 0 002.25 4.25v16.5A2.25 2.25 0 004.5 23h15a2.25 2.25 0 002.25-2.25v-6.75" />
+                        </svg>
+                        Analyze Essay
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pupil & Teacher Name Inputs (Moved to bottom) -->
+        <div id="nameInputsSection" class="hidden flex flex-col items-center gap-4 mt-8 p-6 bg-green-50 rounded-xl shadow-md">
+            <h2 class="text-2xl font-bold text-gray-700">3. Pupil & Teacher Details</h2>
+            <div class="w-full max-w-md">
+                <label for="pupilName" class="block text-lg font-semibold text-gray-700 mb-2">Pupil's Name:</label>
+                <input type="text" id="pupilName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-3 text-lg" placeholder="e.g., Siti Nur Aisyah">
+            </div>
+            <div class="w-full max-w-md">
+                <label for="teacherName" class="block text-lg font-semibold text-gray-700 mb-2">Teacher's Name:</label>
+                <input type="text" id="teacherName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-3 text-lg" placeholder="e.g., Mr. Tan">
             </div>
         </div>
 
         <!-- AI Feedback Section -->
         <div class="mt-8">
-            <h2 class="text-2xl font-bold text-gray-700 mb-6 text-center">3. AI Feedback</h2>
+            <h2 class="text-2xl font-bold text-gray-700 mb-6 text-center">4. AI Feedback</h2>
             <div id="feedbackContainer" class="feedback-section min-h-[200px] flex flex-col items-center justify-center text-gray-600 text-center">
-                <p id="feedbackText" class="text-lg">Capture a photo and click "Analyze Essay" to get feedback.</p>
+                <p id="feedbackText" class="text-lg">Provide the essay question and capture the essay photo to get feedback.</p>
                 <div id="loadingSpinner" class="hidden loading-spinner mt-4"></div>
             </div>
+            <div id="starRatingDisplay" class="text-center text-yellow-500 text-3xl mt-4 hidden">
+                <!-- Stars will be rendered here -->
+            </div>
+            <button id="printButton" class="btn btn-secondary w-full mt-6 hidden">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 16.5V18a2.25 2.25 0 0 0 2.25 2.25h10.5A2.25 2.25 0 0 0 21 18v-1.5m-1.5-9-1.5-1.5m-3.75 0L9 4.5m-4.5 9H4.5A2.25 2.25 0 0 0 2.25 15v2.25A2.25 2.25 0 0 0 4.5 19.5h15A2.25 2.25 0 0 0 21.75 17.25V15a2.25 2.25 0 0 0-2.25-2.25H15M9 12.75l3 3m0 0 3-3m-3 3V2.25" />
+                </svg>
+                Print Feedback (PDF)
+            </button>
         </div>
+
+        <!-- Reset Button -->
+        <button id="resetButton" class="btn btn-secondary w-full max-w-md mt-8">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.181M16.023 9.348l-3.181 3.181m0 0a2.25 2.25 0 0 1-3.182 0l-.539-.539M6.75 7.962l-3.182 3.182m10.392 0L21 7.962m0 0-3.182 3.182m0 0a2.25 2.25 0 0 0-3.182 0l-.539.539m-3.181-3.181 3.181 3.181" />
+            </svg>
+            Reset All
+        </button>
     </div>
 
     <script type="module">
         // Get references to DOM elements
+        const questionSection = document.getElementById('questionSection');
+        const questionInputTypeRadios = document.querySelectorAll('input[name="questionInputType"]');
+        const questionTextInput = document.getElementById('questionTextInput');
+        const questionPhotoInput = document.getElementById('questionPhotoInput');
+        const essayQuestionTextArea = document.getElementById('essayQuestion');
+        const questionVideo = document.getElementById('questionVideo');
+        const questionCanvas = document.getElementById('questionCanvas');
+        const capturedQuestionPhoto = document.getElementById('capturedQuestionPhoto');
+        const captureQuestionButton = document.getElementById('captureQuestionButton');
+        const confirmQuestionButton = document.getElementById('confirmQuestionButton');
+        const confirmedQuestionDisplay = document.getElementById('confirmedQuestionDisplay');
+        const displayedQuestionText = document.getElementById('displayedQuestionText');
+        const displayedQuestionImage = document.getElementById('displayedQuestionImage');
+        const questionInputControls = document.getElementById('questionInputControls');
+
+
+        const essayCaptureSection = document.getElementById('essayCaptureSection');
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const photo = document.getElementById('photo');
         const captureButton = document.getElementById('captureButton');
         const analyzeButton = document.getElementById('analyzeButton');
+
+        const nameInputsSection = document.getElementById('nameInputsSection');
+        const pupilNameInput = document.getElementById('pupilName');
+        const teacherNameInput = document.getElementById('teacherName');
+
         const feedbackContainer = document.getElementById('feedbackContainer');
         const feedbackText = document.getElementById('feedbackText');
         const loadingSpinner = document.getElementById('loadingSpinner');
-        const context = canvas.getContext('2d');
         const essayPartRadios = document.querySelectorAll('input[name="essayPart"]');
+        const printButton = document.getElementById('printButton');
+        const starRatingDisplay = document.getElementById('starRatingDisplay');
+        const resetButton = document.getElementById('resetButton');
 
-        let stream; // To hold the camera stream
-        let capturedImageData = null; // To store base64 image data
+        let questionStream; // To hold the question camera stream
+        let essayStream; // To hold the essay camera stream
+        let capturedQuestionData = { type: 'text', content: '' }; // Stores question: {type: 'text' or 'photo', content: 'text' or base64}
+        let capturedEssayImageData = null; // To store base64 essay image data
+        let globalStarRatingHtml = ''; // To store generated stars for print
+        let globalOverallScoreText = ''; // To store overall score text for print
+        let globalEssayImageForPrint = ''; // To store the essay image for printing
 
-        // Function to start camera stream
-        async function startCamera() {
+        // --- Camera Stream Management ---
+        function stopStream(stream) {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        async function startQuestionCamera() {
+            stopStream(questionStream); // Stop any existing stream first
             try {
-                // Request access to the user's camera
-                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }); // Prefer rear camera
-                video.srcObject = stream; // Set the video source to the camera stream
-                video.play(); // Start playing the video
-                captureButton.disabled = false; // Enable capture button once camera is ready
+                questionStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                questionVideo.srcObject = questionStream;
+                questionVideo.play();
+                captureQuestionButton.disabled = false;
             } catch (err) {
-                // Display error if camera access is denied or fails
-                feedbackText.textContent = 'Error: Could not access the camera. Please ensure you have granted camera permissions.';
-                console.error('Error accessing camera:', err);
+                feedbackText.textContent = 'Error: Could not access camera for question. Please allow permissions.';
+                console.error('Error accessing question camera:', err);
+                captureQuestionButton.disabled = true;
+            }
+        }
+
+        async function startEssayCamera() {
+            stopStream(essayStream); // Stop any existing stream first
+            try {
+                essayStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = essayStream;
+                video.play();
+                captureButton.disabled = false;
+            } catch (err) {
+                feedbackText.textContent = 'Error: Could not access essay camera. Please allow permissions.';
+                console.error('Error accessing essay camera:', err);
                 captureButton.disabled = true;
             }
         }
 
-        // Function to capture photo
-        captureButton.addEventListener('click', () => {
-            if (!stream) {
-                feedbackText.textContent = 'Camera not active. Please refresh and allow camera access.';
-                return;
-            }
-
-            // Set canvas dimensions to match video stream
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-
-            // Draw the current video frame onto the canvas
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            // Get the image data as a base64 string
-            capturedImageData = canvas.toDataURL('image/png');
-
-            // Display the captured photo and show the analyze button
-            photo.src = capturedImageData;
-            photo.classList.remove('hidden');
-            canvas.classList.add('hidden'); // Hide canvas, show img
-            analyzeButton.classList.remove('hidden');
-            feedbackText.innerHTML = '<p class="text-lg">Photo captured. Click "Analyze Essay" to get feedback.</p>';
+        // --- Question Input Logic ---
+        questionInputTypeRadios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.value === 'text') {
+                    questionTextInput.classList.remove('hidden');
+                    questionPhotoInput.classList.add('hidden');
+                    stopStream(questionStream);
+                    questionVideo.srcObject = null;
+                    capturedQuestionPhoto.classList.add('hidden');
+                    capturedQuestionPhoto.src = ''; // Clear image source
+                } else {
+                    questionTextInput.classList.add('hidden');
+                    questionPhotoInput.classList.remove('hidden');
+                    startQuestionCamera();
+                    essayQuestionTextArea.value = ''; // Clear text area
+                }
+            });
         });
 
-        // Function to send image to AI for analysis
+        captureQuestionButton.addEventListener('click', () => {
+            if (!questionStream) {
+                feedbackText.textContent = 'Question camera not active. Please refresh and allow camera access.';
+                return;
+            }
+            questionCanvas.width = questionVideo.videoWidth;
+            questionCanvas.height = questionVideo.videoHeight;
+            questionCanvas.getContext('2d').drawImage(questionVideo, 0, 0, questionCanvas.width, questionCanvas.height);
+            capturedQuestionData = { type: 'photo', content: questionCanvas.toDataURL('image/png') };
+            capturedQuestionPhoto.src = capturedQuestionData.content;
+            capturedQuestionPhoto.classList.remove('hidden');
+            questionVideo.classList.add('hidden');
+            feedbackText.innerHTML = '<p class="text-lg">Question photo captured. Confirm to proceed.</p>';
+        });
+
+        confirmQuestionButton.addEventListener('click', () => {
+            if (questionInputTypeRadios[0].checked) { // Text input selected
+                const questionText = essayQuestionTextArea.value.trim();
+                if (questionText === '') {
+                    feedbackText.innerHTML = '<p class="text-lg text-red-600">Please type the essay question.</p>';
+                    return;
+                }
+                capturedQuestionData = { type: 'text', content: questionText };
+                displayedQuestionText.textContent = questionText;
+                displayedQuestionText.classList.remove('hidden');
+                displayedQuestionImage.classList.add('hidden');
+            } else { // Photo input selected
+                if (!capturedQuestionData.content) {
+                    feedbackText.innerHTML = '<p class="text-lg text-red-600">Please capture the question photo.</p>';
+                    return;
+                }
+                displayedQuestionImage.src = capturedQuestionData.content;
+                displayedQuestionImage.classList.remove('hidden');
+                displayedQuestionText.classList.add('hidden');
+            }
+
+            // Display confirmed question and disable input controls
+            confirmedQuestionDisplay.classList.remove('hidden');
+            questionInputControls.classList.add('hidden');
+            questionTextInput.classList.add('hidden');
+            questionPhotoInput.classList.add('hidden');
+            confirmQuestionButton.classList.add('hidden');
+            stopStream(questionStream); // Stop question camera after confirmation
+
+            // Show essay capture section
+            essayCaptureSection.classList.remove('hidden');
+            nameInputsSection.classList.remove('hidden'); // Show name inputs
+            startEssayCamera(); // Start essay camera
+            feedbackText.innerHTML = '<p class="text-lg">Question confirmed. Now, capture the essay photo.</p>';
+        });
+
+        // --- Essay Capture Logic ---
+        captureButton.addEventListener('click', () => {
+            if (!essayStream) {
+                feedbackText.textContent = 'Essay camera not active. Please refresh and allow camera access.';
+                return;
+            }
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            capturedEssayImageData = canvas.toDataURL('image/png');
+            globalEssayImageForPrint = capturedEssayImageData; // Store for printing
+            photo.src = capturedEssayImageData;
+            photo.classList.remove('hidden');
+            canvas.classList.add('hidden');
+            analyzeButton.classList.remove('hidden');
+            printButton.classList.add('hidden');
+            starRatingDisplay.classList.add('hidden');
+            feedbackText.innerHTML = '<p class="text-lg">Essay photo captured. Click "Analyze Essay" to get feedback.</p>';
+        });
+
+        // --- AI Analysis Logic ---
         analyzeButton.addEventListener('click', async () => {
-            if (!capturedImageData) {
-                feedbackText.innerHTML = '<p class="text-lg">No photo captured yet. Please capture a photo first.</p>';
+            if (!capturedEssayImageData) {
+                feedbackText.innerHTML = '<p class="text-lg">No essay photo captured yet. Please capture a photo first.</p>';
+                return;
+            }
+            if (!capturedQuestionData.content) {
+                feedbackText.innerHTML = '<p class="text-lg">Please provide or capture the essay question first.</p>';
                 return;
             }
 
-            // Get the selected essay part
-            let selectedPart = 'Part 6'; // Default to Part 6
+            let selectedPart = 'Part 6';
             for (const radio of essayPartRadios) {
                 if (radio.checked) {
                     selectedPart = radio.value;
@@ -269,31 +577,25 @@
                 }
             }
 
-            // Show loading spinner and clear previous feedback
-            feedbackText.innerHTML = `<p class="text-lg text-indigo-600">Analyzing essay for ${selectedPart}...</p>`;
+            feedbackText.innerHTML = `<p class="text-lg text-indigo-600">Analysing essay for ${selectedPart}...</p>`;
             loadingSpinner.classList.remove('hidden');
-            analyzeButton.disabled = true; // Disable button during analysis
+            analyzeButton.disabled = true;
+            printButton.classList.add('hidden');
+            starRatingDisplay.classList.add('hidden');
 
             try {
-                // Extract base64 data part (remove "data:image/png;base64,")
-                const base64Data = capturedImageData.split(',')[1];
+                const essayBase64Data = capturedEssayImageData.split(',')[1];
+                let prompt = `You are an AI assistant specialised in evaluating UASA English essays for Year 4 to Year 6.
+                The user has indicated this essay should be evaluated as ${selectedPart}.
+                All feedback should be in UK English.
+                All feedback, including good points, bad points, mistakes, and suggestions, must be written in simple, clear language easily understandable by primary school pupils (Year 4-6). Avoid technical grammatical terms or complex vocabulary.
+                Crucially, do NOT use any bolding or any other markdown formatting in your response. Keep all lists concise, with 1-2 short sentences per point. The entire feedback section should be brief to save API tokens, aiming for under 200 words if possible.
 
-                // Prepare the payload for the Gemini API
-                let chatHistory = [];
-                const prompt = `You are an AI assistant specialized in evaluating UASA English essays for Year 4 to Year 6.
-                The user has indicated this essay should be evaluated as **${selectedPart}**.
+                Evaluate the essay strictly against the rubric provided below and in relation to the essay question.
 
 Here are the rubrics:
 
-**Part 6 (10M) Rubric:**
-* Score 5: All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
-* Score 4: Performance shares features of scores 3 and 5.
-* Score 3: Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
-* Score 2: Performance shares features of scores 1 and 3.
-* Score 1: Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
-* Score 0: Performance below score 1.
-
-**Part 7 (15M) Rubric:**
+Part 6 (10M) Rubric:
 * Score 5: All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
 * Score 4: Performance shares features of scores 3 and 5.
 * Score 3: Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
@@ -301,63 +603,80 @@ Here are the rubrics:
 * Score 1: Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
 * Score 0: Performance below band 1.
 
-**Instructions:**
-1.  **Extract the essay text** from the provided image.
-2.  **Evaluate the essay specifically against the rubric for ${selectedPart}**.
-3.  **Provide a score (1-5) for each relevant category**.
-4.  **Provide an overall score.**
-5.  **Give detailed, constructive feedback** for each category, explaining *why* the score was given based on the rubric criteria.
-6.  **Suggest specific improvements** for the student to achieve a higher score. Keep these suggestions short, concise sentences.
-7.  If no essay text is detected, please state that clearly.
-8.  Do not use excessive bolding or markdown in your response, only use it for section titles as specified below.
+Part 7 (15M) Rubric:
+* Score 5: All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
+* Score 4: Performance shares features of scores 3 and 5.
+* Score 3: Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
+* Score 2: Performance shares features of scores 1 and 3.
+* Score 1: Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
+* Score 0: Performance below band 1.
 
-**Format the output as follows:**
-Content & Communicative Achievement: [Score]/5
-Organisation & Language: [Score]/5
-Overall Mark: [Calculated Overall Score]/[Max Score for Part]
-
-Improvement:
-[Short sentence 1].
-[Short sentence 2].
-[Short sentence 3].
-...
-
-For Part 7, the format should be:
-Content: [Score]/5
-Communicative Achievement: [Score]/5
-Organisation & Language: [Score]/5
-Overall Mark: [Calculated Overall Score]/[Max Score for Part]
-
-Improvement:
-[Short sentence 1].
-[Short sentence 2].
-[Short sentence 3].
-...
+Format the output as follows:
+📝 Smart Essay Feedback
+📊 Scores by Criterion:
 `;
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
-                const payload = {
-                    contents: [
-                        {
-                            role: "user",
-                            parts: [
-                                { text: prompt },
-                                {
-                                    inlineData: {
-                                        mimeType: "image/png",
-                                        data: base64Data
-                                    }
-                                }
-                            ]
+                let scoreFormatSection = '';
+                if (selectedPart === 'Part 6') {
+                    scoreFormatSection = `Content & Communicative Achievement: [Score]/5
+Organisation & Language: [Score]/5`;
+                } else { // Part 7
+                    scoreFormatSection = `Content: [Score]/5
+Communicative Achievement: [Score]/5
+Organisation & Language: [Score]/5`;
+                }
+
+                prompt += scoreFormatSection + `
+✅ Overall Mark: [Calculated Overall Score]/[Max Score for Part]
+
+👍 What is Good:
+- [Good point 1]
+- [Good point 2]
+
+👎 What is Bad:
+- [Bad point 1]
+- [Bad point 2]
+
+🛠️ Mistakes Noted:
+- [Mistake 1]
+- [Mistake 2]
+
+🔧 Suggestions for Improvement:
+- [Short sentence 1].
+- [Short sentence 2].
+- [Short sentence 3].
+`;
+
+                const parts = [];
+                if (capturedQuestionData.type === 'text') {
+                    parts.push({ text: prompt + `\nThe essay question is: "${capturedQuestionData.content}".` });
+                    parts.push({
+                        inlineData: {
+                            mimeType: "image/png",
+                            data: essayBase64Data
                         }
-                    ],
-                };
+                    });
+                } else { // Question is an image
+                    parts.push({ text: prompt + `\nThe essay question is provided in the first image. The essay itself is in the second image.` });
+                    parts.push({
+                        inlineData: {
+                            mimeType: "image/png",
+                            data: capturedQuestionData.content.split(',')[1] // Question image
+                        }
+                    });
+                    parts.push({
+                        inlineData: {
+                            mimeType: "image/png",
+                            data: essayBase64Data // Essay image
+                        }
+                    });
+                }
 
-                // API key will be provided by the Canvas environment
-                const apiKey = "AIzaSyB5HvC6atp12cA1redrNznyzfnRLA7VFXQ";
+                const payload = { contents: [{ role: "user", parts: parts }] }; // Wrap parts in a user role
+
+                const apiKey = "";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-                // Make the API call
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -366,33 +685,301 @@ Improvement:
 
                 const result = await response.json();
 
-                // Process the AI response
                 if (result.candidates && result.candidates.length > 0 &&
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
                     const aiFeedback = result.candidates[0].content.parts[0].text;
-                    // Replace newlines with <br> for HTML display
                     feedbackText.innerHTML = aiFeedback.replace(/\n/g, '<br>');
-                    // Also, ensure the text alignment is left for better readability of the feedback
                     feedbackContainer.style.textAlign = 'left';
+
+                    let overallMarkMatch = aiFeedback.match(/Overall Mark: (\d+)\/(\d+)/);
+                    globalStarRatingHtml = '';
+                    globalOverallScoreText = 'N/A';
+                    if (overallMarkMatch) {
+                        const score = parseInt(overallMarkMatch[1]);
+                        const maxScore = parseInt(overallMarkMatch[2]);
+                        globalOverallScoreText = `${score}/${maxScore}`;
+
+                        if (!isNaN(score) && !isNaN(maxScore) && maxScore > 0) {
+                            const calculatedStars = (score / maxScore) * 5;
+                            for (let i = 1; i <= 5; i++) {
+                                if (i <= calculatedStars) {
+                                    globalStarRatingHtml += '<i class="fas fa-star text-yellow-500"></i>';
+                                } else if (i - 0.5 <= calculatedStars) {
+                                    globalStarRatingHtml += '<i class="fas fa-star-half-alt text-yellow-500"></i>';
+                                } else {
+                                    globalStarRatingHtml += '<i class="far fa-star text-yellow-500"></i>';
+                                }
+                            }
+                        }
+                    }
+                    starRatingDisplay.innerHTML = globalStarRatingHtml;
+                    starRatingDisplay.classList.remove('hidden');
+                    printButton.classList.remove('hidden');
                 } else {
                     feedbackText.innerHTML = '<p class="text-lg text-red-600">Could not get AI feedback. Please try again.</p>';
                     console.error('Unexpected API response structure:', result);
                 }
 
             } catch (error) {
-                // Handle any errors during the API call
-                feedbackText.innerHTML = `<p class="text-lg text-red-600">Error analyzing essay: ${error.message}. Please try again.</p>`;
+                feedbackText.innerHTML = `<p class="text-lg text-red-600">Error analysing essay: ${error.message}. Please try again.</p>`;
                 console.error('Error during AI analysis:', error);
             } finally {
-                // Hide loading spinner and re-enable button
                 loadingSpinner.classList.add('hidden');
                 analyzeButton.disabled = false;
             }
         });
 
-        // Start camera when the window loads
-        window.onload = startCamera;
+        // Function to print the feedback
+        printButton.addEventListener('click', () => {
+            const pupilName = pupilNameInput.value.trim() || 'Not provided';
+            const teacherName = teacherNameInput.value.trim() || 'Not provided';
+            const todayDate = new Date().toLocaleDateString('en-GB', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let questionContentForPrint = '';
+            if (capturedQuestionData.type === 'text') {
+                questionContentForPrint = `
+                    <div class="print-question-section" style="text-align: left;">
+                        <h2 style="font-size: 9pt; font-weight: bold; margin-bottom: 1mm;">Essay Question:</h2>
+                        <p style="font-size: 8pt; line-height: 1.1;">${capturedQuestionData.content}</p>
+                    </div>`;
+            } else if (capturedQuestionData.type === 'photo' && capturedQuestionData.content) {
+                questionContentForPrint = `
+                    <div class="print-question-section" style="text-align: center;">
+                        <h2 style="font-size: 9pt; font-weight: bold; margin-bottom: 1mm;">Essay Question Image:</h2>
+                        <img src="${capturedQuestionData.content}" style="max-width: 100px; height: auto; border-radius: 5px; display: block; margin: 0 auto;" alt="Question Image">
+                    </div>`;
+            }
+
+            let essayImageForPrint = '';
+            if (globalEssayImageForPrint) {
+                essayImageForPrint = `
+                    <div class="print-essay-image-section" style="text-align: center;">
+                        <h2 style="font-size: 9pt; font-weight: bold; margin-bottom: 1mm;">Captured Essay:</h2>
+                        <img src="${globalEssayImageForPrint}" style="max-width: 100%; height: auto; border-radius: 5px; display: block; margin: 0 auto;" alt="Captured Essay Image">
+                    </div>`;
+            }
+
+            const printHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Essay Feedback Print</title>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+                    <style>
+                        body {
+                            font-family: "Inter", sans-serif;
+                            margin: 0;
+                            padding: 0;
+                            color: #000;
+                        }
+                        @page {
+                            size: A4 landscape;
+                            margin: 0;
+                        }
+                        .print-container {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            width: 297mm; /* A4 landscape width */
+                            height: 210mm; /* A4 landscape height */
+                            padding: 5mm; /* Overall padding for the entire A4 page */
+                            box-sizing: border-box;
+                        }
+                        .print-left-sheet {
+                            padding-right: 5mm;
+                            border-right: 1px dashed #ddd;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: flex-start;
+                            align-items: center;
+                            text-align: center;
+                            box-sizing: border-box;
+                            font-size: 8pt;
+                        }
+                        .print-left-sheet h1 {
+                            font-size: 14pt;
+                            font-weight: bold;
+                            margin-bottom: 2mm;
+                            color: #000;
+                        }
+                        .print-left-sheet p {
+                            font-size: 8pt;
+                            margin-bottom: 0.5mm;
+                            line-height: 1.1;
+                        }
+                        .print-left-sheet .star-rating-print {
+                            font-size: 12pt;
+                            color: #facc15;
+                            margin-top: 1mm;
+                            margin-bottom: 1mm;
+                        }
+                        .print-left-sheet .overall-score-print {
+                            font-size: 10pt;
+                            font-weight: bold;
+                            margin-top: 1mm;
+                            margin-bottom: 3mm;
+                        }
+                        .print-question-section, .print-essay-image-section {
+                            width: 100%;
+                            margin-bottom: 3mm;
+                            padding-bottom: 2mm;
+                            border-bottom: 1px solid #eee;
+                            box-sizing: border-box;
+                        }
+                        .print-question-section h2, .print-essay-image-section h2 {
+                            font-size: 9pt;
+                            font-weight: bold;
+                            margin-bottom: 1mm;
+                            text-align: center;
+                        }
+                        .print-question-section p {
+                            font-size: 8pt;
+                            line-height: 1.1;
+                            text-align: left;
+                        }
+                        .print-question-section img, .print-essay-image-section img {
+                            max-width: 90%;
+                            height: auto;
+                            border-radius: 5px;
+                            margin: 0 auto;
+                            display: block;
+                        }
+
+                        .print-right-sheet {
+                            padding-left: 5mm;
+                            display: flex;
+                            flex-direction: column;
+                            box-sizing: border-box;
+                        }
+                        .feedback-content {
+                            font-size: 10.5pt; /* Increased font size for main feedback */
+                            line-height: 1.4; /* More comfortable line height */
+                            color: #000;
+                            text-align: left;
+                        }
+                        .feedback-content p, .feedback-content ul, .feedback-content li {
+                            font-size: 10.5pt; /* Consistent font size */
+                            line-height: 1.4;
+                            color: #000;
+                            margin-bottom: 3px; /* Standard margin for list items/paragraphs */
+                        }
+                        .feedback-content ul {
+                            list-style-type: disc;
+                            margin-left: 18px; /* Standard list indent */
+                            padding-left: 0;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="print-container">
+                        <div class="print-left-sheet">
+                            <h1>Smart Essay Feedback for UASA</h1>
+                            <p><strong>Pupil:</strong> ${pupilName}</p>
+                            <p><strong>Teacher:</strong> ${teacherName}</p>
+                            <p><strong>Date:</strong> ${todayDate}</p>
+                            <div class="star-rating-print">
+                                ${globalStarRatingHtml}
+                            </div>
+                            <p class="overall-score-print">Overall Mark: ${globalOverallScoreText}</p>
+                            ${questionContentForPrint}
+                            ${essayImageForPrint}
+                        </div>
+                        <div class="print-right-sheet">
+                            <div class="feedback-content">
+                                ${feedbackText.innerHTML}
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '_blank');
+            if (!printWindow) {
+                alert("Pop-up blocked! Please allow pop-ups for this site to print.");
+                return;
+            }
+
+            printWindow.document.write(printHtml);
+            printWindow.document.close();
+
+            // Add a small delay to ensure content and CSS are rendered
+            printWindow.onload = function() {
+                setTimeout(() => {
+                    printWindow.focus();
+                    printWindow.print();
+                }, 300); // 300ms delay
+            };
+        });
+
+        // --- Reset Functionality ---
+        resetButton.addEventListener('click', () => {
+            // Stop all camera streams
+            stopStream(questionStream);
+            stopStream(essayStream);
+
+            // Clear inputs
+            essayQuestionTextArea.value = '';
+            pupilNameInput.value = '';
+            teacherNameInput.value = '';
+
+            // Reset question input display
+            questionInputTypeRadios[0].checked = true; // Default to text input
+            questionTextInput.classList.remove('hidden');
+            questionPhotoInput.classList.add('hidden');
+            questionVideo.srcObject = null;
+            capturedQuestionPhoto.classList.add('hidden');
+            capturedQuestionPhoto.src = '';
+            capturedQuestionData = { type: 'text', content: '' };
+            displayedQuestionText.textContent = '';
+            displayedQuestionImage.src = '';
+            confirmedQuestionDisplay.classList.add('hidden');
+            questionInputControls.classList.remove('hidden');
+            confirmQuestionButton.classList.remove('hidden');
+
+            // Hide essay capture section
+            essayCaptureSection.classList.add('hidden');
+            video.srcObject = null;
+            photo.classList.add('hidden');
+            photo.src = '';
+            canvas.classList.add('hidden');
+            capturedEssayImageData = null;
+            globalEssayImageForPrint = ''; // Clear essay image for print
+            analyzeButton.classList.add('hidden');
+
+            // Hide name inputs
+            nameInputsSection.classList.add('hidden');
+
+            // Clear and hide feedback
+            feedbackText.innerHTML = '<p class="text-lg">Provide the essay question and capture the essay photo to get feedback.</p>';
+            loadingSpinner.classList.add('hidden');
+            starRatingDisplay.classList.add('hidden');
+            starRatingDisplay.innerHTML = '';
+            printButton.classList.add('hidden');
+
+            // Re-enable initial buttons
+            captureButton.disabled = true; // Will be enabled when essay camera starts
+            captureQuestionButton.disabled = false; // Will be enabled if photo option selected
+            analyzeButton.disabled = false;
+
+            // If question photo input was selected, restart question camera
+            if (questionInputTypeRadios[1].checked) {
+                startQuestionCamera();
+            }
+        });
+
+        // Initial setup on load
+        window.onload = () => {
+            // Start question camera only if photo input is selected by default, otherwise no camera needed
+            if (questionInputTypeRadios[1].checked) { // Check if 'photo' radio is checked
+                startQuestionCamera();
+            }
+            // No need to start essay camera yet, it will start after question is confirmed
+        };
     </script>
 </body>
 </html>
