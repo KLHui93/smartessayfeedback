@@ -190,9 +190,9 @@
             }
             .print-left-sheet h1 {
                 display: block;
-                font-size: 13pt; /* Smaller title for left sheet */
+                font-size: 13pt;
                 font-weight: bold;
-                margin-bottom: 1.5mm; /* Reduced margin */
+                margin-bottom: 1.5mm;
                 color: #000;
             }
             .print-left-sheet p {
@@ -801,14 +801,20 @@
             starRatingDisplay.classList.add('hidden');
 
             try {
-                let prompt = `You are an AI assistant specialised in evaluating UASA English essays for Year 4 to Year 6.
-                The user has indicated this essay should be evaluated as ${selectedPart}.
-                All feedback should be in UK English.
-                All feedback, including good points, bad points, mistakes, and suggestions, must be written in simple, clear language easily understandable by primary school pupils (Year 4-6). Avoid technical grammatical terms or complex vocabulary.
+                let prompt = `你是一个专门评估 UASA 英语作文的 AI 助手，面向 4 至 6 年级的小学生。
+                用户已指出这篇作文应按 ${selectedPart} 进行评估。
+                所有反馈都应使用英式英语。
+                所有反馈，包括优点、缺点、错误，都必须使用简单、清晰的语言，以便小学生（4-6 岁）轻松理解。
+                反馈应简短但全面。所有错误都必须提到，但每个错误描述应非常简短。
 
-                Evaluate the essay strictly against the rubric provided below and in relation to the essay question.
+                在为每个评分标准打分时，请直接参考该分数对应的评分标准陈述。例如，如果学生在“内容”方面得了 5 分，请说明：“你的内容非常棒！你所有的想法都与任务相关，读者也能完全理解，这正是评分标准中 5 分的表现。”
+                请不要对学生过于严苛。提供鼓励和建设性的反馈。
+                确保所给出的分数与提供的反馈和评分标准始终保持一致。
+                请特别注意，"overallMark"（总分）必须根据各个评分标准的分数和该部分的最高分（Part 6 为 10 分，Part 7 为 15 分）准确计算。
 
-Here are the rubrics:
+                请严格按照以下评分标准并结合作文问题评估作文。
+
+以下是评分标准：
 
 Part 6 (10M) Rubric:
 * Score 5: All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
@@ -816,7 +822,7 @@ Part 6 (10M) Rubric:
 * Score 3: Target reader is on the whole informed. Minor irrelevances and/or omissions may be present. Produces a text that communicates simple ideas in simple ways. Text is connected using basic, high frequency connectors. Uses basic vocabulary reasonably. Uses simple grammatical forms with some degree of control. Errors may impede meaning at times.
 * Score 2: Performance shares features of scores 1 and 3.
 * Score 1: Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
-* Score 0: Performance below band 1.
+* Score 0: Performance below score 1.
 
 Part 7 (15M) Rubric:
 * Score 5: All content is relevant to the task. Target reader is fully informed. Produces a text that communicates straightforward ideas using the conventions of the communicative task reasonably well. Uses simple connectors and a limited number of cohesive devices appropriately. Uses basic vocabulary appropriately. Uses simple grammatical forms with a good degree of control. While errors are noticeable, meaning can still be determined.
@@ -826,7 +832,7 @@ Part 7 (15M) Rubric:
 * Score 1: Target reader is minimally informed. Irrelevances and/or misinterpretation of task may be present. Produces isolated short units about simple and concrete matters, not always communicating successfully. Production unlikely to be connected, though punctuation and simple connectors (i.e., and) may be used on occasion. Produces basic vocabulary of isolated words and phrases. Produces few simple grammatical forms with only limited control.
 * Score 0: Performance below band 1.
 
-Return your response as a JSON object with the following structure:
+以以下 JSON 对象结构返回你的响应：
 {
   "scores": {
     // For Part 6: "contentAndCommunicativeAchievement": [Score]/5, "organisationAndLanguage": [Score]/5
@@ -835,21 +841,20 @@ Return your response as a JSON object with the following structure:
   "overallMark": "[Calculated Overall Score]/[Max Score for Part]",
   "goodPoints": ["Good point 1", "Good point 2", "..."],
   "badPoints": ["Bad point 1", "Bad point 2", "..."],
-  "mistakesNoted": ["List all possible mistakes in detail, e.g., 'Incorrect verb tense: 'He go' should be 'He goes'.'", "Provide another detailed mistake.", "..."],
-  "suggestionsForImprovement": ["Provide specific suggestions with simple examples, e.g., 'To improve vocabulary, try using stronger adjectives like 'huge' instead of 'big'.", "Give another specific suggestion with an example.", "..."]
+  "mistakesNoted": ["List all possible mistakes in detail, e.g., 'Incorrect verb tense: 'He go' should be 'He goes'.'", "Provide another detailed mistake.", "..."]
 }
-Ensure all scores are integers from 0 to 5.
-If no essay text is detected, set all scores to 0 and provide a message in badPoints.
+确保所有分数都是 0 到 5 之间的整数。
+如果未检测到作文文本，则所有分数设置为 0 并在 badPoints 中提供消息。
 `;
 
                 let scoreFormatSection = '';
                 if (selectedPart === 'Part 6') {
-                    scoreFormatSection = `"contentAndCommunicativeAchievement": [Score]/5,
-    "organisationAndLanguage": [Score]/5`;
+                    scoreFormatSection = `"contentAndCommunicativeAchievement": { "type": "NUMBER" },
+    "organisationAndLanguage": { "type": "NUMBER" }`;
                 } else { // Part 7
-                    scoreFormatSection = `"content": [Score]/5,
-    "communicativeAchievement": [Score]/5,
-    "organisationAndLanguage": [Score]/5`;
+                    scoreFormatSection = `"content": { "type": "NUMBER" },
+    "communicativeAchievement": { "type": "NUMBER" },
+    "organisationAndLanguage": { "type": "NUMBER" }`;
                 }
 
                 // Inject the dynamic score format into the prompt's JSON structure example
@@ -859,7 +864,10 @@ If no essay text is detected, set all scores to 0 and provide a message in badPo
                     scoreFormatSection
                 );
 
-                const chatHistoryParts = [{ text: prompt }];
+                const chatHistoryParts = [];
+
+                // Add the main prompt text
+                chatHistoryParts.push({ text: prompt });
 
                 // Add the essay question based on its type
                 if (capturedQuestionData.type === 'text') {
@@ -872,7 +880,7 @@ If no essay text is detected, set all scores to 0 and provide a message in badPo
                             data: capturedQuestionData.content.split(',')[1]
                         }
                     });
-                    // Optionally, add a text description for the image if the model needs context
+                    // Add a text description for the image to give the model context
                     chatHistoryParts.push({ text: "Here is the image of the essay question." });
                 }
 
@@ -908,10 +916,9 @@ If no essay text is detected, set all scores to 0 and provide a message in badPo
                                 overallMark: { type: "STRING" },
                                 goodPoints: { type: "ARRAY", items: { type: "STRING" } },
                                 badPoints: { type: "ARRAY", items: { type: "STRING" } },
-                                mistakesNoted: { type: "ARRAY", items: { type: "STRING" } },
-                                suggestionsForImprovement: { type: "ARRAY", items: { type: "STRING" } }
+                                mistakesNoted: { type: "ARRAY", items: { type: "STRING" } }
                             },
-                            required: ["scores", "overallMark", "goodPoints", "badPoints", "mistakesNoted", "suggestionsForImprovement"]
+                            required: ["scores", "overallMark", "goodPoints", "badPoints", "mistakesNoted"]
                         }
                     }
                 };
@@ -957,10 +964,7 @@ If no essay text is detected, set all scores to 0 and provide a message in badPo
                     jsonResponse.mistakesNoted.forEach(point => {
                         formattedFeedback += `- ${point}<br>`;
                     });
-                    formattedFeedback += `<br>🔧 Suggestions for Improvement:<br>`;
-                    jsonResponse.suggestionsForImprovement.forEach(point => {
-                        formattedFeedback += `- ${point}<br>`;
-                    });
+                    // Removed suggestionsForImprovement section
 
                     feedbackText.innerHTML = formattedFeedback;
                     feedbackContainer.style.textAlign = 'left';
