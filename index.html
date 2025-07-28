@@ -373,10 +373,10 @@
             <canvas id="canvas" class="hidden"></canvas>
             <img id="photo" class="hidden w-full h-80 bg-gray-200" alt="Captured Essay Photo">
 
-            <div id="extractedTextSection" class="hidden w-full max-w-md flex flex-col items-center gap-4">
+            <div id="extractedTextSection" class="hidden w-full max-w-md flex flex-col items-center gap-4 relative z-10">
                 <h3 class="text-xl font-bold text-gray-700">Review Extracted Text:</h3>
                 <textarea id="editedEssayText" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-3 text-base" rows="8" placeholder="Extracted text will appear here..."></textarea>
-                <button id="confirmTextAndAnalyzeButton" class="btn btn-primary w-full">Confirm Text & Analyze</button>
+                <button id="confirmTextAndAnalyzeButton" class="btn btn-primary w-full relative z-20">Confirm Text & Analyze</button>
             </div>
             <button id="analyzeButton" class="btn btn-secondary w-full hidden">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
@@ -774,6 +774,7 @@
 
         // --- Confirm Text & Analyze Logic ---
         confirmTextAndAnalyzeButton.addEventListener('click', async () => {
+            console.log("Confirm Text & Analyze button clicked!"); // Debug log
             const editedText = editedEssayText.value.trim();
             if (editedText === '') {
                 feedbackText.innerHTML = '<p class="text-lg text-red-600">Please provide essay text to analyze.</p>';
