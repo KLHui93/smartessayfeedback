@@ -859,9 +859,29 @@ If no essay text is detected, set all scores to 0 and provide a message in badPo
                     scoreFormatSection
                 );
 
+                const chatHistoryParts = [{ text: prompt }];
+
+                // Add the essay question based on its type
+                if (capturedQuestionData.type === 'text') {
+                    chatHistoryParts.push({ text: `The essay question is: "${capturedQuestionData.content}"` });
+                } else if (capturedQuestionData.type === 'photo' && capturedQuestionData.content) {
+                    // Add the question image as inlineData
+                    chatHistoryParts.push({
+                        inlineData: {
+                            mimeType: "image/png", // Assuming PNG, adjust if needed
+                            data: capturedQuestionData.content.split(',')[1]
+                        }
+                    });
+                    // Optionally, add a text description for the image if the model needs context
+                    chatHistoryParts.push({ text: "Here is the image of the essay question." });
+                }
+
+                // Add the essay text
+                chatHistoryParts.push({ text: `The essay text: """${editedText}"""` });
+
                 const chatHistory = [{
                     role: "user",
-                    parts: [{ text: prompt + `\nThe essay question is: "${capturedQuestionData.content}".\nThe essay text: """${editedText}"""` }]
+                    parts: chatHistoryParts
                 }];
 
                 const payload = {
